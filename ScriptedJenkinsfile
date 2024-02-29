@@ -1,0 +1,17 @@
+node("agent"){
+    parameters{
+      booleanParam(name: "prod_run", defaultValue: false)
+    }
+    stage("Git checkout"){
+        git credentialsId: 'jenkins', url: 'https://github.com/grigoryevpavel/clickhouse'
+    }
+    stage("Run playbook"){
+        if (params.prod_run){
+            sh 'ansible-playbook clickhouse.yml -i inventory/prod.yml'
+        }
+        else{
+           sh 'ansible-playbook --check --diff clickhouse.yml -i inventory/prod.yml'
+        }
+        
+    }
+}
